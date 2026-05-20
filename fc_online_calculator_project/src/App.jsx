@@ -55,28 +55,25 @@ export default function App() {
     if (data) setSavedPlayers(JSON.parse(data));
   }, []);
 
-  const calculateOVR = (weights) => {
-    let total = 0;
-    let totalWeight = 0;
-    for (const stat in weights) {
-      const cleanStat = stat.replace(/[0-9]/g, '');
-      total += stats[cleanStat] * weights[stat];
-      totalWeight += weights[stat];
-    }
-    return Math.round(total / totalWeight);
-  };
-
-  const currentOVR = calculateOVR(positions[position]);
-
   const savePlayer = () => {
     const player = {
       id: Date.now(),
       name, season, position, currentOVR, height, weight,
-      preferredFoot, weakFoot, age, bodyType, stats
+      preferredFoot, weakFoot, age, bodyType, stats,
     };
     const updated = [...savedPlayers, player];
     setSavedPlayers(updated);
     localStorage.setItem('fcPlayers', JSON.stringify(updated));
+  };
+
+  // 삭제 기능 추가
+  const deletePlayer = (id, e) => {
+    e.stopPropagation(); // 카드 클릭(불러오기) 방지
+    if (window.confirm('이 선수를 삭제하시겠습니까?')) {
+      const updated = savedPlayers.filter(p => p.id !== id);
+      setSavedPlayers(updated);
+      localStorage.setItem('fcPlayers', JSON.stringify(updated));
+    }
   };
 
   const loadPlayer = (player) => {
@@ -92,21 +89,25 @@ export default function App() {
     setStats(player.stats);
   };
 
-  const deletePlayer = (id, e) => {
-    e.stopPropagation(); // 카드 클릭(불러오기) 이벤트 전파 방지
-    if (window.confirm('이 선수를 목록에서 삭제하시겠습니까?')) {
-      const updated = savedPlayers.filter(p => p.id !== id);
-      setSavedPlayers(updated);
-      localStorage.setItem('fcPlayers', JSON.stringify(updated));
+  const calculateOVR = (weights) => {
+    let total = 0;
+    let totalWeight = 0;
+    for (const stat in weights) {
+      const cleanStat = stat.replace(/[0-9]/g, '');
+      total += stats[cleanStat] * weights[stat];
+      totalWeight += weights[stat];
     }
+    return Math.round(total / totalWeight);
   };
+
+  const currentOVR = calculateOVR(positions[position]);
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-8">
           
-          {/* 왼쪽: 선수 카드 섹션 */}
+          {/* 카드 미리보기 */}
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="lg:w-1/3">
             <div className="rounded-[32px] overflow-hidden border border-emerald-400/30 p-1 shadow-2xl bg-zinc-950 sticky top-6">
               <div className="bg-black/70 backdrop-blur-xl rounded-[30px] p-6 h-full">
@@ -115,129 +116,135 @@ export default function App() {
                     <div className="text-6xl font-extrabold leading-none">{currentOVR}</div>
                     <div className="text-xl font-bold mt-1 text-emerald-400">{position}</div>
                   </div>
-                  <div className="text-right text-sm text-emerald-300 font-bold">{season}</div>
+                  <div className="text-right">
+                    <div className="text-sm text-emerald-300 font-bold">{season}</div>
+                  </div>
                 </div>
                 <div className="h-10"></div>
                 <div className="text-2xl font-bold tracking-wide mt-6 text-center">{name}</div>
                 <div className="mt-6 grid grid-cols-2 gap-3 text-sm text-zinc-300">
                   <div className="bg-white/5 rounded-xl p-3 text-center">
-                    <div className="text-zinc-500 text-xs mb-1">키 / 몸무게</div>
-                    <div className="font-bold">{height}cm / {weight}kg</div>
+                    <div className="text-zinc-500 text-xs mb-1">키</div>
+                    <div className="font-bold">{height} cm</div>
                   </div>
                   <div className="bg-white/5 rounded-xl p-3 text-center">
-                    <div className="text-zinc-500 text-xs mb-1">발능력</div>
+                    <div className="text-zinc-500 text-xs mb-1">몸무게</div>
+                    <div className="font-bold">{weight} kg</div>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-3 text-center col-span-2">
+                    <div className="text-zinc-500 text-xs mb-1">약발 / 주발</div>
                     <div className="font-bold">{preferredFoot === 'RIGHT' ? `${weakFoot}/5` : `5/${weakFoot}`}</div>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-3 text-center">
-                    <div className="text-zinc-500 text-xs mb-1">나이</div>
-                    <div className="font-bold">{age}세</div>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-3 text-center">
-                    <div className="text-zinc-500 text-xs mb-1">체형</div>
-                    <div className="font-bold">{bodyType}</div>
                   </div>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* 오른쪽: 설정 및 스탯 조절 섹션 */}
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:w-2/3">
             <div className="flex gap-4 mb-6">
-              <button onClick={savePlayer} className="bg-emerald-400 hover:bg-emerald-300 transition-all text-black font-black px-8 py-4 rounded-2xl shadow-lg shadow-emerald-500/20">
-                현재 선수 저장하기
-              </button>
+              <button onClick={savePlayer} className="bg-emerald-400 hover:bg-emerald-300 transition-all text-black font-black px-6 py-4 rounded-2xl">선수 저장</button>
             </div>
 
-            <div className="bg-zinc-950 border border-emerald-400/20 rounded-3xl p-6 backdrop-blur-xl mb-6">
-              <h1 className="text-3xl font-black mb-2 text-emerald-400 uppercase tracking-tighter">FC Online Player Builder</h1>
-              <p className="text-zinc-400 text-sm">세부 능력치를 조절하면 모든 포지션 오버롤이 실시간으로 계산됩니다.</p>
+            <div className="bg-zinc-950 border border-emerald-400/20 rounded-3xl p-6 backdrop-blur-xl shadow-2xl mb-6">
+              <h1 className="text-4xl font-black mb-2 uppercase italic">FC Online Builder</h1>
+              <p className="text-zinc-400">선수 스탯을 조절하여 모든 포지션의 오버롤을 실시간으로 확인하세요.</p>
             </div>
 
-            {/* 선수 기본 정보 입력 */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-sm">
-              <div className="bg-zinc-950 rounded-2xl p-4 border border-white/5">
-                <label className="text-zinc-500 block mb-2 font-medium">선수 이름</label>
-                <input value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-zinc-900 rounded-xl p-3 outline-none focus:ring-1 ring-emerald-500" />
+            {/* 기본 정보 입력 */}
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-zinc-950 rounded-2xl p-4 border border-emerald-400/10">
+                <label className="text-sm text-zinc-400 block mb-2">선수 이름</label>
+                <input value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-zinc-900 rounded-xl p-3 outline-none" />
               </div>
-              <div className="bg-zinc-950 rounded-2xl p-4 border border-white/5">
-                <label className="text-zinc-500 block mb-2 font-medium">시즌 (예: 24TOTY)</label>
-                <input value={season} onChange={(e) => setSeason(e.target.value)} className="w-full bg-zinc-900 rounded-xl p-3 outline-none focus:ring-1 ring-emerald-500" />
+              <div className="bg-zinc-950 rounded-2xl p-4 border border-emerald-400/10">
+                <label className="text-sm text-zinc-400 block mb-2">시즌</label>
+                <input value={season} onChange={(e) => setSeason(e.target.value)} className="w-full bg-zinc-900 rounded-xl p-3 outline-none" />
               </div>
-              <div className="bg-zinc-950 rounded-2xl p-4 border border-white/5">
-                <label className="text-zinc-500 block mb-2 font-medium">메인 포지션</label>
+              <div className="bg-zinc-950 rounded-2xl p-4 border border-emerald-400/10">
+                <label className="text-sm text-zinc-400 block mb-2">메인 포지션</label>
                 <select value={position} onChange={(e) => setPosition(e.target.value)} className="w-full bg-zinc-900 rounded-xl p-3 outline-none">
-                  {Object.keys(positions).map(pos => <option key={pos}>{pos}</option>)}
+                  {Object.keys(positions).map((pos) => <option key={pos} value={pos}>{pos}</option>)}
                 </select>
               </div>
             </div>
 
-            {/* 스탯 조절 슬라이더 */}
-            <div className="bg-zinc-950 rounded-3xl p-6 border border-white/5 shadow-2xl mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+               <div className="bg-zinc-950 rounded-2xl p-4 border border-emerald-400/10">
+                <label className="text-sm text-zinc-400 block mb-2">키</label>
+                <input type="number" value={height} onChange={(e) => setHeight(Number(e.target.value))} className="w-full bg-zinc-900 rounded-xl p-3 outline-none text-center" />
+              </div>
+              <div className="bg-zinc-950 rounded-2xl p-4 border border-emerald-400/10">
+                <label className="text-sm text-zinc-400 block mb-2">몸무게</label>
+                <input type="number" value={weight} onChange={(e) => setWeight(Number(e.target.value))} className="w-full bg-zinc-900 rounded-xl p-3 outline-none text-center" />
+              </div>
+              <div className="bg-zinc-950 rounded-2xl p-4 border border-emerald-400/10">
+                <label className="text-sm text-zinc-400 block mb-2">주발</label>
+                <select value={preferredFoot} onChange={(e) => setPreferredFoot(e.target.value)} className="w-full bg-zinc-900 rounded-xl p-3 outline-none">
+                  <option value="RIGHT">오른발</option>
+                  <option value="LEFT">왼발</option>
+                </select>
+              </div>
+              <div className="bg-zinc-950 rounded-2xl p-4 border border-emerald-400/10">
+                <label className="text-sm text-zinc-400 block mb-2">약발</label>
+                <select value={weakFoot} onChange={(e) => setWeakFoot(Number(e.target.value))} className="w-full bg-zinc-900 rounded-xl p-3 outline-none">
+                  {[1,2,3,4,5].map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </div>
+              <div className="bg-zinc-950 rounded-2xl p-4 border border-emerald-400/10">
+                <label className="text-sm text-zinc-400 block mb-2">체형</label>
+                <select value={bodyType} onChange={(e) => setBodyType(e.target.value)} className="w-full bg-zinc-900 rounded-xl p-3 outline-none">
+                  <option>마름</option><option>보통</option><option>건장</option>
+                </select>
+              </div>
+            </div>
+
+            {/* 스탯 슬라이더 */}
+            <div className="bg-zinc-950 rounded-3xl p-6 border border-emerald-400/10 shadow-2xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                 {Object.keys(stats).map((key) => (
-                  <div key={key} className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5">
+                  <div key={key} className="bg-zinc-900/50 rounded-xl p-3 border border-white/5">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-zinc-400 text-sm">{labels[key]}</span>
-                      <span className="font-black text-emerald-400 text-lg">{stats[key]}</span>
+                      <span className="text-sm text-zinc-400">{labels[key]}</span>
+                      <input type="number" value={stats[key]} onChange={(e) => setStats({...stats, [key]: Number(e.target.value)})} className="w-14 bg-transparent text-right font-black text-emerald-400 outline-none" />
                     </div>
-                    <input type="range" min="1" max="150" value={stats[key]} 
-                      onChange={(e) => setStats({...stats, [key]: Number(e.target.value)})}
-                      className="w-full accent-emerald-500" 
-                    />
+                    <input type="range" min="1" max="150" value={stats[key]} onChange={(e) => setStats({...stats, [key]: Number(e.target.value)})} className="w-full accent-emerald-400 h-1" />
                   </div>
                 ))}
               </div>
             </div>
 
             {/* 저장된 선수 목록 (삭제 기능 포함) */}
-            <div className="mb-12">
+            <div className="mt-12 bg-zinc-950 rounded-3xl p-6 border border-emerald-400/10">
               <h2 className="text-2xl font-black mb-6 flex items-center gap-2">
-                <span className="w-2 h-8 bg-emerald-500 rounded-full"></span>
+                <span className="w-2 h-8 bg-emerald-400 rounded-full"></span>
                 저장된 선수 목록
               </h2>
               <div className="grid md:grid-cols-2 gap-4">
-                {savedPlayers.length === 0 && <p className="text-zinc-600 italic">저장된 선수가 없습니다.</p>}
                 {savedPlayers.map((player) => (
-                  <div 
-                    key={player.id}
-                    onClick={() => loadPlayer(player)}
-                    className="bg-zinc-900 hover:bg-zinc-800 transition-all rounded-2xl p-5 border border-white/5 flex justify-between items-center cursor-pointer group"
-                  >
+                  <div key={player.id} onClick={() => loadPlayer(player)} className="bg-zinc-900 hover:bg-zinc-800 transition-all rounded-2xl p-4 border border-white/5 text-left flex justify-between items-center cursor-pointer group">
                     <div>
                       <div className="text-lg font-bold group-hover:text-emerald-400 transition-colors">{player.name}</div>
-                      <div className="text-zinc-500 text-sm">{player.season} · {player.position}</div>
+                      <div className="text-zinc-500 text-sm">{player.season} · {player.position} · OVR {player.currentOVR}</div>
                     </div>
-                    <div className="flex items-center gap-6">
-                      <div className="text-3xl font-black text-emerald-400">{player.currentOVR}</div>
-                      <button 
-                        onClick={(e) => deletePlayer(player.id, e)}
-                        className="text-zinc-700 hover:text-red-500 transition-colors p-2 text-xl"
-                        title="삭제"
-                      >
-                        ✕
-                      </button>
-                    </div>
+                    <button onClick={(e) => deletePlayer(player.id, e)} className="text-zinc-600 hover:text-red-500 p-2 transition-colors font-bold">✕</button>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* 모든 포지션 오버롤 확인 */}
-            <div>
-              <h2 className="text-2xl font-black mb-6 flex items-center gap-2">
-                <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
-                포지션별 예상 오버롤
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {/* 모든 포지션 오버롤 */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-black mb-6">전체 포지션 OVR</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {Object.entries(positions).map(([pos, weights]) => (
-                  <div key={pos} className={`rounded-2xl p-4 border transition-all ${position === pos ? 'bg-emerald-500 text-black border-emerald-400 font-bold' : 'bg-zinc-900 border-white/5 text-zinc-400'}`}>
-                    <div className="text-xs uppercase mb-1 opacity-70">{pos}</div>
-                    <div className="text-2xl font-black">{calculateOVR(weights)}</div>
+                  <div key={pos} className={`rounded-2xl p-4 border transition-all ${position === pos ? 'bg-emerald-400 text-black border-emerald-300 scale-105' : 'bg-zinc-900 border-white/10'}`}>
+                    <div className="text-xs font-bold mb-1 opacity-70">{pos}</div>
+                    <div className="text-3xl font-black">{calculateOVR(weights)}</div>
                   </div>
                 ))}
               </div>
             </div>
+
           </motion.div>
         </div>
       </div>
