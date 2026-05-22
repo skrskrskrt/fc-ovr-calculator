@@ -2,22 +2,23 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function App() {
-  const positions = {
+ const positions = {
     ST: { finishing: 18, positioning: 13, ballControl: 10, shotPower: 10, heading: 10, reactions: 8, dribbling: 7, strength: 5, speed: 5, shortPass: 5, accel: 4, longShot: 3, volley: 2 },
     CF: { ballControl: 15, dribbling: 14, positioning: 13, finishing: 11, reactions: 9, shortPass: 9, vision: 8, shotPower: 5, speed: 5, accel: 5, longShot: 4, heading: 2 },
-    LW: { dribbling: 16, ballControl: 14, positioning: 10, shortPass: 9, crossing: 9, reactions: 7, accel: 7, vision: 6, speed: 6, longShot: 4, agility: 3 },
-    RW: { dribbling: 16, ballControl: 14, positioning: 10, shortPass: 9, crossing: 9, reactions: 7, accel: 7, vision: 6, speed: 6, longShot: 4, agility: 3 },
-    CAM: { ballControl: 16, vision: 15, dribbling: 13, positioning: 9, reactions: 7, finishing: 7, longShot: 5, shortPass: 4, accel: 4, speed: 3, agility: 3 },
-    LM: { dribbling: 15, ballControl: 13, shortPass: 11, crossing: 10, positioning: 8, reactions: 7, accel: 7, vision: 7, finishing: 6, longPass: 6, stamina: 5 },
-    CM: { shortPass: 17, ballControl: 14, vision: 13, longPass: 13, reactions: 8, dribbling: 7, positioning: 6, stamina: 6, strength: 5, accel: 5, longShot: 4, finishing: 2 },
-    RM: { dribbling: 15, ballControl: 13, shortPass: 11, crossing: 10, positioning: 8, reactions: 7, accel: 7, vision: 7, finishing: 6, longPass: 6, stamina: 5 },
-    CDM: { shortPass: 14, interception: 14, standingTackle: 12, ballControl: 10, longPass: 10, marking: 9, reactions: 7, stamina: 6, slidingTackle: 5, vision: 5, strength: 4 },
-    LWB: { accel: 12, crossing: 12, slidingTackle: 11, shortPass: 10, stamina: 10, standingTackle: 8, reactions: 8, marking: 7, speed: 6, dribbling: 4 },
-    LB: { slidingTackle: 14, accel: 12, standingTackle: 11, crossing: 9, stamina: 8, reactions: 8, marking: 8, shortPass: 7, ballControl: 7, speed: 7, heading: 4 },
-    CB: { slidingTackle: 17, marking: 14, interception: 13, standingTackle: 10, heading: 10, strength: 10, positioning: 7, reactions: 5, shortPass: 5, ballControl: 4, jumping: 3, speed: 2 },
-    RB: { slidingTackle: 14, accel: 12, standingTackle: 11, crossing: 9, stamina: 8, reactions: 8, marking: 8, shortPass: 7, ballControl: 7, speed: 7, heading: 4 },
-    RWB: { accel: 12, crossing: 12, slidingTackle: 11, shortPass: 10, stamina: 10, standingTackle: 8, reactions: 8, marking: 7, speed: 6, dribbling: 4 },
-    GK: { gkDiving: 21, gkHandling: 21, gkKicking: 21, gkReflexes: 21, reactions: 11, gkPositioning: 5 }
+    LW: { dribbling: 16, ballControl: 14, finishing: 10, positioning: 9, shortPass: 9, crossing: 9, reactions: 7, accel: 7, vision: 6, speed: 6, longShot: 4, agility: 3 },
+    RW: { dribbling: 16, ballControl: 14, finishing: 10, positioning: 9, shortPass: 9, crossing: 9, reactions: 7, accel: 7, vision: 6, speed: 6, longShot: 4, agility: 3 },
+    CAM: { shortPass: 16, ballControl: 15, vision: 14, dribbling: 13, positioning: 9, reactions: 7, finishing: 7, longShot: 5, accel: 4, longPass: 4, speed: 3, agility: 3 },
+    LM: { dribbling: 15, ballControl: 13, shortPass: 11, crossing: 10, positioning: 8, reactions: 7, accel: 7, vision: 7, finishing: 6, speed: 6, stamina: 5, longPass: 5 },
+    RM: { dribbling: 15, ballControl: 13, shortPass: 11, crossing: 10, positioning: 8, reactions: 7, accel: 7, vision: 7, finishing: 6, speed: 6, stamina: 5, longPass: 5 },
+    CM: { shortPass: 17, ballControl: 14, vision: 13, longPass: 13, reactions: 8, dribbling: 7, positioning: 6, stamina: 6, standingTackle: 5, interception: 5, longShot: 4, finishing: 2 },
+    CDM: { shortPass: 14, interception: 14, standingTackle: 12, ballControl: 10, longPass: 10, marking: 9, reactions: 7, stamina: 6, slidingTackle: 5, aggression: 5, vision: 4, strength: 4 },
+    LWB: { interception: 12, crossing: 12, slidingTackle: 11, shortPass: 10, stamina: 10, standingTackle: 8, ballControl: 8, reactions: 8, marking: 7, speed: 6, dribbling: 4, accel: 4 },
+    RWB: { interception: 12, crossing: 12, slidingTackle: 11, shortPass: 10, stamina: 10, standingTackle: 8, ballControl: 8, reactions: 8, marking: 7, speed: 6, dribbling: 4, accel: 4 },
+    LB: { slidingTackle: 14, interception: 12, standingTackle: 11, crossing: 9, stamina: 8, reactions: 8, marking: 8, shortPass: 7, ballControl: 7, speed: 7, accel: 5, heading: 4 },
+    RB: { slidingTackle: 14, interception: 12, standingTackle: 11, crossing: 9, stamina: 8, reactions: 8, marking: 8, shortPass: 7, ballControl: 7, speed: 7, accel: 5, heading: 4 },
+    CB: { slidingTackle: 17, marking: 14, interception: 13, standingTackle: 10, heading: 10, strength: 10, aggression: 7, reactions: 5, shortPass: 5, ballControl: 4, jumping: 3, speed: 2 },
+    SW: { slidingTackle: 15, marking: 15, standingTackle: 15, heading: 10, strength: 10, interception: 8, aggression: 8, reactions: 5, shortPass: 5, ballControl: 5, jumping: 4 },
+    GK: { gkDiving: 21, gkHandling: 21, gkPositioning: 21, gkReflexes: 21, reactions: 11, gkKicking: 5 }
   };
 
   const labels = {
